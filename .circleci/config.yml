@@ -1,0 +1,41 @@
+version: 2
+
+jobs:
+  build:
+    machine: true
+    environment:
+      CHANGE_MINIKUBE_NONE_USER: true
+      MINIKUBE_DRIVER: "none"
+      M8S_NAME: "circleci-build-test"
+      MONGO_RELEASE_NAME: "circleci-mongodb-test"
+      REACTION_API_NAME: "grape-ape-api"
+      M8S_REPO: "reactioncommerce/reaction"
+      M8S_TAG: "latest"
+      REPLICAS: 2
+      MONGO_REPLICAS: 3
+      MINIKUBE_MEMORY: 7777
+      MINIKUBE_CPU: 4
+      HOME: /opt/circleci
+    steps:
+      - restore_cache:
+          keys:
+            - m8s-v1-{{ arch }}-{{ .Branch }}-{{ .Revision }}
+            - m8s-v1-{{ arch }}-{{ .Branch }}
+            - m8s-v1
+
+      - checkout
+      - run: git submodule update --init
+
+      - run: .circleci/install.sh
+      - run: touch $HOME/.bashrc $HOME/.bash_profile $HOME/.zshrc $HOME/.profile
+      - run: /usr/bin/time -v make -e run_dotfiles
+      - run: bash .ci/envtest.sh
+      - run: /usr/bin/time -v make -e linuxreqs
+      - run: /bin/bash -l -c "source /opt/circleci/.bashrc && /usr/bin/time -v make -e ci"
+
+      - save_cache:
+          key: m8s-v1-{{ arch }}-{{ .Branch }}-{{ .Revision }}
+          paths:
+            - /opt/circleci/.m8s
+            - /home/circleci/.minikube
+            - ".git"

@@ -1,0 +1,34 @@
+#!/bin/bash
+if [ $# -ne 1 ]; then
+  # Print usage
+  echo 'Error! wrong number of arguments'
+  echo 'usage:'
+  echo 'mongo_url number-of-replicants'
+  exit 1
+fi
+
+# Now let's just do it in bash
+MONGO_DB_COUNT=$1
+let COMMAFORE=$1-1
+
+#echo -n 'm8s.mongo_url_big: mongodb://'
+echo -n '  m8s.mongo_url: '
+echo -n 'mongodb://'
+
+# while loop
+countzero=0
+
+while [ $countzero -lt $MONGO_DB_COUNT ]
+do
+   echo -n '{{ .Values.mongodbReleaseName }}-mongodb-replicaset-'
+   echo -n "$countzero"
+   echo -n '.{{ .Values.mongodbReleaseName }}-mongodb-replicaset'
+   echo -n ':{{ .Values.mongodbPort }}'
+   if (( $countzero < $COMMAFORE )); then
+     echo -n ,
+   fi
+   countzero=`expr $countzero + 1`
+done
+#end while
+
+echo '/{{ .Values.mongodbName }}?replicaSet={{ .Values.mongodbReplicaSet }}'

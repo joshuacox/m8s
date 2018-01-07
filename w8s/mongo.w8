@@ -1,0 +1,44 @@
+#!/bin/sh
+: ${M8S_NAMESPACE:=m8s}
+if [ $# -ne 2 ]; then
+  # Print usage
+  echo 'Error! wrong number of arguments'
+  echo 'usage:'
+  echo 'w8/mongo.w8 release-name how-many-mongos-to-wait-for'
+  exit 1
+fi
+
+echo "Wait on the $1 mongo cluster to settle"
+
+mongow8 () {
+  echo -n "waiting on "
+  echo -n "$1-mongodb-replicaset-$2"
+
+  # while loop
+  countone=1
+  # timeout for 30 minutes
+  while [ $countone -lt 301 ]
+  do
+    echo -n '.'
+    RESULT=$(kubectl get po --namespace=$M8S_NAMESPACE | grep $1-mongodb-replicaset-$2 | grep Running)
+    if [ "$RESULT" ]; then
+        echo "."
+        echo "$RESULT"
+        break
+    fi
+    countone=`expr $countone + 1`
+    sleep 3
+  done
+
+  echo -n "$1-mongodb-replicaset-$2"
+  echo " is now up and running."
+}
+
+# while loop
+countzero=0
+
+while [ $countzero -lt $2 ]
+do
+   mongow8 $1 $countzero
+   countzero=`expr $countzero + 1`
+done

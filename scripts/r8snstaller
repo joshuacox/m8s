@@ -1,0 +1,25 @@
+#!/usr/bin/env sh
+: ${M8S_DIR:=$HOME/.m8s}
+: ${M8S_BIN:=$M8S_DIR/bin}
+: ${VERBOSITY:=0}
+TARGET=$1
+
+set -e
+set -u
+
+if type "$TARGET" > /dev/null; then
+  if [ $VERBOSITY -gt '0' ]; then
+    echo "$TARGET found in path"
+  fi
+  if [ ! -e $M8S_BIN/$TARGET ]; then
+    ln -s $(which $TARGET) $M8S_BIN/$TARGET
+    if [ $VERBOSITY -gt '0' ]; then
+      ls -al $M8S_BIN/$TARGET
+    fi
+  fi
+else
+  if [ $VERBOSITY -gt '0' ]; then
+    echo "$TARGET not found attempting to make..."
+  fi
+    make -e $M8S_BIN/$TARGET
+fi

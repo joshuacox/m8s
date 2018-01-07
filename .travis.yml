@@ -1,0 +1,50 @@
+matrix:
+  include:
+    - os: linux
+      dist: trusty
+      sudo: required
+      services:
+      - docker
+      cache:
+        directories:
+        - $HOME/.minikube
+        - $HOME/.m8s
+        - .git
+      env:
+        - MINIKUBE_MEMORY=7777
+        - MINIKUBE_CPU=4
+        - MINIKUBE_DRIVER=none
+        - M8S_NAME=travisci-build-test
+        - MONGO_RELEASE_NAME=travisci-mongodb-test
+        - M8S_REPO=reactioncommerce/reaction
+        - M8S_TAG=latest
+        - REPLICAS=1
+        - MONGO_REPLICAS=3
+# Possible os x support in the future
+    #- os: osx
+    #  osx_image: xcode7.2
+
+language: bash
+
+addons:
+  apt:
+    packages:
+      - curl
+      - socat
+      - time
+
+before_install:
+# install nsenter which is required for port forwarding
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then .ci/ubuntu-compile-nsenter.sh && sudo cp .tmp/util-linux-2.30.2/nsenter /usr/bin; fi
+# Possible os x support in the future
+#  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update          ; fi
+
+script:
+  - git submodule update --init
+  - touch ~/.bashrc ~/.bash_profile ~/.zshrc ~/.profile
+  - rm ~/.profile
+  - /usr/bin/time -v make -e run_dotfiles
+  - bash .ci/envtest.sh
+  - /usr/bin/time -v make -e linuxreqs
+    #- /bin/bash -l -c "source /home/travis/.profile && /usr/bin/time -v make -e ci"
+  - /bin/bash -l -c "/usr/bin/time -v make -e ci"

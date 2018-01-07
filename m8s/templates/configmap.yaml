@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-m8s-config
+data:
+  m8s.root_url: {{ .Values.m8sRoot_url }}
+  m8s.mongo_url: {{ template "mongodb_replicaset_url" . }}
