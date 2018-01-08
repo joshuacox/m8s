@@ -1,0 +1,33 @@
+#!/bin/bash
+: ${M8S_NAMESPACE:=m8s}
+if [ $# -ne 1 ]; then
+  # Print usage
+  echo 'Error! wrong number of arguments'
+  echo 'usage:'
+  echo 'w8/webpage.w8 what-release-name-to-wait-for'
+  exit 1
+fi
+sleep 1
+export TARGET_KUBE_CMD_OPTS="--namespace=$M8S_NAMESPACE -l app=reactioncommerce,release=$1 -o jsonpath='{ .items[0].metadata.name }'"
+echo  "kubectl get pods $TARGET_KUBE_CMD_OPTS"
+export POD_NAME=$(echo "kubectl get pods $TARGET_KUBE_CMD_OPTS" | bash)
+echo "kubectl port-forward --namespace=$M8S_NAMESPACE $POD_NAME 3001:3000 &"
+kubectl port-forward --namespace=$M8S_NAMESPACE $POD_NAME 3001:3000 &
+sleep 5
+
+echo -n "Wait on Reactionetes to become available and serve a page"
+sleep 8
+printf '.'
+sleep 5
+printf '.'
+sleep 3
+printf '.'
+
+until $(curl --output /dev/null --silent --head --fail http://127.0.0.1:3001); do
+    printf '.'
+    #kubectl get po
+    sleep 3
+done
+
+echo '.'
+echo "Reactionetes is now fully up and running and serving webpages on port 3001."
