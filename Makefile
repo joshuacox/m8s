@@ -13,8 +13,8 @@ $(eval MONGO_RELEASE_NAME := massive-mongonetes)
 $(eval PROMETHEUS_NAME := pyromaniac-prometheus)
 
 # M8s settings
-$(eval M8S_REPO := joshuacox/todos)
-$(eval M8S_TAG := latest)
+$(eval M8S_REPO := joshuacox/m8s)
+$(eval M8S_TAG := demoteor)
 $(eval M8S_REPLICAS := 1)
 $(eval M8S_CLUSTER_DOMAIN := cluster.local)
 
