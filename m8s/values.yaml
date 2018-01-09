@@ -46,4 +46,4 @@ mongodbPort: 27017
 # m8s specific values
 m8sClusterDomain: 'cluster.local'
 # No 'https://' on this it will be added later
-meteorRoot_url:  'http://m8s.example.com'
+m8sRoot_url:  'http://m8s.example.com'
