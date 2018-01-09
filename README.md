@@ -65,7 +65,7 @@ make -e autopilot
 
 ### Asciinema
 
-[![asciicast](https://asciinema.org/a/qKtakcqwuUEgJTA9CBj4tRUxW.png)](https://asciinema.org/a/qKtakcqwuUEgJTA9CBj4tRUxW)
+[![asciicast](https://asciinema.org/a/KgYCK4JGHjdks5JU6suOEsPZI.png)](https://asciinema.org/a/KgYCK4JGHjdks5JU6suOEsPZI)
 
 ## [Full Docs](./docs/README.md)
 
